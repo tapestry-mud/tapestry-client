@@ -46,7 +46,7 @@ jobs:
       - name: Clean old assets
         uses: appleboy/ssh-action@v1.2.5
         with:
-          host: ${{ secrets.DEPLOY_HOST }}
+          host: 165.22.230.43
           username: deploy
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: rm -rf /opt/tapestry/client/dist/*
@@ -54,7 +54,7 @@ jobs:
       - name: Deploy to droplet
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.DEPLOY_HOST }}
+          host: 165.22.230.43
           username: deploy
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           source: "dist/*"
