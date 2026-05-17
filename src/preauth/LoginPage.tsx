@@ -4,27 +4,18 @@ import { WebSocketClient } from '../connection/WebSocketClient'
 import { WheelMark } from './WheelMark'
 import './preauth.css'
 
-/* ── Shared sub-components ───────────────────── */
+/* -- Shared sub-components -- */
 
-function StepIndicator({ step }: { step: 1 | '2a' | '2b' }) {
-  const onTwo = step !== 1
-  const label = step === 1
-    ? 'Step 1 of 2: Character name'
-    : step === '2a'
-      ? 'Step 2 of 2: Credentials'
-      : 'Step 2 of 2: New thread'
-
+function StepIndicator({ step }: { step: 1 | 2 }) {
   return (
-    <nav className="step-row" aria-label={label}>
-      <span className={`step-pip ${onTwo ? 'done' : 'active'}`} aria-hidden="true">
-        {onTwo ? '✓' : '1'}
+    <nav className="step-row" aria-label={step === 1 ? 'Step 1 of 2: Login' : 'Step 2 of 2: Character'}>
+      <span className={`step-pip ${step > 1 ? 'done' : 'active'}`} aria-hidden="true">
+        {step > 1 ? '✓' : '1'}
       </span>
-      <span className={step === 1 ? 'step-label-active' : ''}>Character</span>
-      <span className={`step-line ${onTwo ? 'lit' : ''}`} aria-hidden="true" />
-      <span className={`step-pip ${onTwo ? 'active' : ''}`} aria-hidden="true">2</span>
-      <span className={onTwo ? 'step-label-active' : ''}>
-        {step === '2b' ? 'New thread' : 'Credentials'}
-      </span>
+      <span className={step === 1 ? 'step-label-active' : ''}>Login</span>
+      <span className={`step-line ${step > 1 ? 'lit' : ''}`} aria-hidden="true" />
+      <span className={`step-pip ${step > 1 ? 'active' : ''}`} aria-hidden="true">2</span>
+      <span className={step > 1 ? 'step-label-active' : ''}>Character</span>
     </nav>
   )
 }
@@ -38,97 +29,10 @@ function LoadingDots() {
   )
 }
 
-/* ── Step 1: Name entry ──────────────────────── */
+/* -- Step 1: Email + Password login -- */
 
-function NameStep({ onAdvance }: { onAdvance: (name: string, kind: 'returning' | 'new') => void }) {
-  const [value, setValue] = useState('')
-  const [error, setError] = useState('')
-  const [busy, setBusy] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    inputRef.current?.focus()
-  }, [])
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const trimmed = value.trim()
-    if (!trimmed) { return }
-
-    setError('')
-    setBusy(true)
-    try {
-      const baseUrl = deriveAuthBaseUrl()
-      const res = await fetch(`${baseUrl}/auth/check?name=${encodeURIComponent(trimmed)}`)
-      if (res.status === 429) {
-        throw new Error('Too many attempts. Please wait a moment and try again.')
-      }
-      const data = await res.json()
-      if (!data.nameValid) {
-        throw new Error(data.error ?? 'Invalid name.')
-      }
-      if (data.exists) {
-        onAdvance(trimmed, 'returning')
-      } else {
-        onAdvance(trimmed, 'new')
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong.')
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const trimmed = value.trim()
-  const isDisabled = busy || !trimmed
-
-  return (
-    <div className="pa-card">
-      <StepIndicator step={1} />
-      <h2 className="pa-form-h">Speak your name into the loom.</h2>
-      <p className="pa-form-sub">Step <span className="gold">01</span> &middot; Character</p>
-      <form onSubmit={handleSubmit} aria-busy={busy}>
-        <div className="pa-field">
-          <label className="pa-field-label" htmlFor="pa-name">Character name</label>
-          <div className="pa-input-wrap">
-            <span className="pa-input-prompt" aria-hidden="true">&rsaquo;</span>
-            <input
-              ref={inputRef}
-              id="pa-name"
-              className="pa-input"
-              type="text"
-              placeholder="Enter a name"
-              autoComplete="off"
-              value={value}
-              disabled={busy}
-              onChange={(e) => { setValue(e.target.value) }}
-            />
-          </div>
-        </div>
-        <div className="pa-error-slot" role="alert" aria-live="polite">
-          {error && (
-            <>
-              <span className="pa-error-icon" aria-hidden="true">!</span>
-              {error}
-            </>
-          )}
-        </div>
-        <button
-          className="pa-submit"
-          type="submit"
-          disabled={isDisabled}
-          aria-disabled={isDisabled}
-        >
-          {busy ? <LoadingDots /> : 'Continue →'}
-        </button>
-      </form>
-    </div>
-  )
-}
-
-/* ── Step 2a: Returning character password ───── */
-
-function ReturningStep({ name, onBack }: { name: string; onBack: () => void }) {
+function LoginStep({ onAdvance }: { onAdvance: (accountId: string, characters: string[]) => void }) {
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -140,7 +44,8 @@ function ReturningStep({ name, onBack }: { name: string; onBack: () => void }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!password) { return }
+    const trimmedEmail = email.trim()
+    if (!trimmedEmail || !password) { return }
 
     setError('')
     setBusy(true)
@@ -149,7 +54,7 @@ function ReturningStep({ name, onBack }: { name: string; onBack: () => void }) {
       const res = await fetch(`${baseUrl}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, password }),
+        body: JSON.stringify({ email: trimmedEmail, password }),
       })
       if (res.status === 429) {
         throw new Error('Too many attempts. Please wait a moment and try again.')
@@ -158,10 +63,7 @@ function ReturningStep({ name, onBack }: { name: string; onBack: () => void }) {
       if (!res.ok) {
         throw new Error(data.error ?? 'Login failed')
       }
-      const serverUrl = WebSocketClient.deriveServerUrl()
-      if (serverUrl) {
-        WebSocketClient.connect(serverUrl, data.token)
-      }
+      onAdvance(data.account_id, data.characters ?? [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed.')
     } finally {
@@ -169,20 +71,36 @@ function ReturningStep({ name, onBack }: { name: string; onBack: () => void }) {
     }
   }
 
-  const isDisabled = busy || !password
+  const isDisabled = busy || !email.trim() || !password
 
   return (
     <div className="pa-card">
-      <StepIndicator step="2a" />
-      <h2 className="pa-form-h">Welcome back, <em>{name}</em>.</h2>
-      <p className="pa-form-sub">Step <span className="gold">02</span> &middot; Credentials</p>
+      <StepIndicator step={1} />
+      <h2 className="pa-form-h">Speak your name into the loom.</h2>
+      <p className="pa-form-sub">Step <span className="gold">01</span> &middot; Login</p>
       <form onSubmit={handleSubmit} aria-busy={busy}>
+        <div className="pa-field">
+          <label className="pa-field-label" htmlFor="pa-email">Email</label>
+          <div className="pa-input-wrap">
+            <span className="pa-input-prompt" aria-hidden="true">&rsaquo;</span>
+            <input
+              ref={inputRef}
+              id="pa-email"
+              className="pa-input"
+              type="email"
+              placeholder="Enter your email"
+              autoComplete="email"
+              value={email}
+              disabled={busy}
+              onChange={(e) => { setEmail(e.target.value) }}
+            />
+          </div>
+        </div>
         <div className="pa-field">
           <label className="pa-field-label" htmlFor="pa-password">Password</label>
           <div className="pa-input-wrap">
             <span className="pa-input-prompt" aria-hidden="true">&middot;</span>
             <input
-              ref={inputRef}
               id="pa-password"
               className="pa-input"
               type="password"
@@ -208,53 +126,75 @@ function ReturningStep({ name, onBack }: { name: string; onBack: () => void }) {
           disabled={isDisabled}
           aria-disabled={isDisabled}
         >
-          {busy ? <LoadingDots /> : 'Enter the Pattern →'}
+          {busy ? <LoadingDots /> : 'Continue →'}
         </button>
       </form>
-      <div className="pa-back-row">
-        <button
-          className="pa-back-link"
-          type="button"
-          onClick={onBack}
-          disabled={busy}
-          aria-disabled={busy}
-        >
-          &larr; Use a different name
-        </button>
-      </div>
     </div>
   )
 }
 
-/* ── Step 2b: New character creation ─────────── */
+/* -- Step 2: Character select or create -- */
 
-function NewCharStep({ name, onBack }: { name: string; onBack: () => void }) {
-  const [password, setPassword] = useState('')
-  const [confirm, setConfirm] = useState('')
+function CharacterStep({
+  accountId,
+  characters,
+  onBack,
+}: {
+  accountId: string
+  characters: string[]
+  onBack: () => void
+}) {
+  const [newName, setNewName] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    inputRef.current?.focus()
-  }, [])
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!password || !confirm) { return }
-    if (password !== confirm) {
-      setError('Passwords do not match.')
-      return
+    if (characters.length === 0) {
+      inputRef.current?.focus()
     }
+  }, [characters.length])
+
+  async function selectCharacter(character: string) {
+    setError('')
+    setBusy(true)
+    try {
+      const baseUrl = deriveAuthBaseUrl()
+      const res = await fetch(`${baseUrl}/auth/select`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accountId, character }),
+      })
+      if (res.status === 429) {
+        throw new Error('Too many attempts. Please wait a moment and try again.')
+      }
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error ?? 'Selection failed')
+      }
+      const serverUrl = WebSocketClient.deriveServerUrl()
+      if (serverUrl) {
+        WebSocketClient.connect(serverUrl, data.token)
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Selection failed.')
+      setBusy(false)
+    }
+  }
+
+  async function createCharacter(e: React.FormEvent) {
+    e.preventDefault()
+    const trimmed = newName.trim()
+    if (!trimmed) { return }
 
     setError('')
     setBusy(true)
     try {
       const baseUrl = deriveAuthBaseUrl()
-      const res = await fetch(`${baseUrl}/auth/login`, {
+      const res = await fetch(`${baseUrl}/auth/select`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, password, confirmPassword: confirm }),
+        body: JSON.stringify({ accountId, newCharacter: trimmed }),
       })
       if (res.status === 429) {
         throw new Error('Too many attempts. Please wait a moment and try again.')
@@ -269,50 +209,49 @@ function NewCharStep({ name, onBack }: { name: string; onBack: () => void }) {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Creation failed.')
-    } finally {
       setBusy(false)
     }
   }
 
-  const isDisabled = busy || !password || !confirm
-
   return (
     <div className="pa-card">
-      <StepIndicator step="2b" />
-      <div className="pa-new-badge">{name}</div>
-      <h2 className="pa-form-h">Bind a new thread to the loom.</h2>
-      <p className="pa-form-sub">Step <span className="gold">02</span> &middot; New thread</p>
-      <form onSubmit={handleSubmit} aria-busy={busy}>
+      <StepIndicator step={2} />
+      <h2 className="pa-form-h">Choose your thread.</h2>
+      <p className="pa-form-sub">Step <span className="gold">02</span> &middot; Character</p>
+
+      {characters.length > 0 && (
+        <div className="pa-char-list">
+          {characters.map((name) => (
+            <button
+              key={name}
+              className="pa-char-btn"
+              type="button"
+              disabled={busy}
+              onClick={() => { selectCharacter(name) }}
+            >
+              {name}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <form onSubmit={createCharacter} aria-busy={busy}>
         <div className="pa-field">
-          <label className="pa-field-label" htmlFor="pa-new-pw">Password</label>
+          <label className="pa-field-label" htmlFor="pa-new-char">
+            {characters.length > 0 ? 'Or create a new character' : 'Create your first character'}
+          </label>
           <div className="pa-input-wrap">
-            <span className="pa-input-prompt" aria-hidden="true">&middot;</span>
+            <span className="pa-input-prompt" aria-hidden="true">&rsaquo;</span>
             <input
               ref={inputRef}
-              id="pa-new-pw"
+              id="pa-new-char"
               className="pa-input"
-              type="password"
-              placeholder="Choose a password"
-              autoComplete="new-password"
-              value={password}
+              type="text"
+              placeholder="Enter a name"
+              autoComplete="off"
+              value={newName}
               disabled={busy}
-              onChange={(e) => { setPassword(e.target.value) }}
-            />
-          </div>
-        </div>
-        <div className="pa-field">
-          <label className="pa-field-label" htmlFor="pa-confirm-pw">Confirm password</label>
-          <div className="pa-input-wrap">
-            <span className="pa-input-prompt" aria-hidden="true">&middot;</span>
-            <input
-              id="pa-confirm-pw"
-              className="pa-input"
-              type="password"
-              placeholder="Confirm password"
-              autoComplete="new-password"
-              value={confirm}
-              disabled={busy}
-              onChange={(e) => { setConfirm(e.target.value) }}
+              onChange={(e) => { setNewName(e.target.value) }}
             />
           </div>
         </div>
@@ -327,12 +266,13 @@ function NewCharStep({ name, onBack }: { name: string; onBack: () => void }) {
         <button
           className="pa-submit"
           type="submit"
-          disabled={isDisabled}
-          aria-disabled={isDisabled}
+          disabled={busy || !newName.trim()}
+          aria-disabled={busy || !newName.trim()}
         >
           {busy ? <LoadingDots /> : 'Create & enter →'}
         </button>
       </form>
+
       <div className="pa-back-row">
         <button
           className="pa-back-link"
@@ -341,33 +281,28 @@ function NewCharStep({ name, onBack }: { name: string; onBack: () => void }) {
           disabled={busy}
           aria-disabled={busy}
         >
-          &larr; Use a different name
+          &larr; Use a different account
         </button>
       </div>
     </div>
   )
 }
 
-/* ── Main LoginPage ──────────────────────────── */
+/* -- Main LoginPage -- */
 
 type Step =
-  | { phase: 'name' }
-  | { phase: 'returning'; name: string }
-  | { phase: 'new'; name: string }
+  | { phase: 'login' }
+  | { phase: 'character'; accountId: string; characters: string[] }
 
 export function LoginPage({ onBack }: { onBack: () => void }) {
-  const [step, setStep] = useState<Step>({ phase: 'name' })
+  const [step, setStep] = useState<Step>({ phase: 'login' })
 
-  function handleNameAdvance(name: string, kind: 'returning' | 'new') {
-    if (kind === 'returning') {
-      setStep({ phase: 'returning', name })
-    } else {
-      setStep({ phase: 'new', name })
-    }
+  function handleLoginAdvance(accountId: string, characters: string[]) {
+    setStep({ phase: 'character', accountId, characters })
   }
 
   function handleStepBack() {
-    setStep({ phase: 'name' })
+    setStep({ phase: 'login' })
   }
 
   return (
@@ -380,14 +315,15 @@ export function LoginPage({ onBack }: { onBack: () => void }) {
 
         <h1 className="pa-sr-only">Tapestry Login</h1>
 
-        {step.phase === 'name' && (
-          <NameStep onAdvance={handleNameAdvance} />
+        {step.phase === 'login' && (
+          <LoginStep onAdvance={handleLoginAdvance} />
         )}
-        {step.phase === 'returning' && (
-          <ReturningStep name={step.name} onBack={handleStepBack} />
-        )}
-        {step.phase === 'new' && (
-          <NewCharStep name={step.name} onBack={handleStepBack} />
+        {step.phase === 'character' && (
+          <CharacterStep
+            accountId={step.accountId}
+            characters={step.characters}
+            onBack={handleStepBack}
+          />
         )}
 
         <div className="pa-below">
