@@ -99,6 +99,7 @@ export function ConnectScreen() {
         >
           {isConnecting ? 'Connecting...' : 'Connect'}
         </button>
+        <span className="text-text-secondary text-[10px] font-mono text-center opacity-50">v{__APP_VERSION__}</span>
       </div>
     </div>
   )

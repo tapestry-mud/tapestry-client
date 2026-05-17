@@ -31,6 +31,7 @@ export function DebugDrawer() {
           </button>
         ))}
         <div className="flex-1" />
+        <span className="text-text-secondary text-[10px] font-mono opacity-50 mr-2">{__APP_VERSION__}</span>
         <span className="text-text-secondary text-xs">` to close</span>
       </div>
       <div className="flex-1 overflow-hidden">
