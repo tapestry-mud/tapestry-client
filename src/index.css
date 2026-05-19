@@ -79,5 +79,5 @@ body {
 }
 
 #root {
-  @apply w-screen h-screen;
+  @apply w-screen min-h-screen;
 }
