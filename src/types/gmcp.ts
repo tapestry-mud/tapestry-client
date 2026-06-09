@@ -175,9 +175,39 @@ export const IncomingGmcpEnvelopeSchema = z.object({
   data: z.unknown(),
 })
 
+// Watch-mode (Slice B) frames. The anonymous spectator transport serializes its own typed
+// envelopes (the raw transport only knows text/gmcp), demuxed here beside text/gmcp:
+//   watch  — a chunk of the watched player's rendered ANSI output (rendered to the terminal)
+//   roster — the current list of watchable players
+//   status — a short status line (e.g. "Now watching X")
+export const WatchRosterEntrySchema = z.object({
+  entityId: z.string(),
+  name: z.string(),
+  roomId: z.string(),
+})
+export type WatchRosterEntry = z.infer<typeof WatchRosterEntrySchema>
+
+export const IncomingWatchEnvelopeSchema = z.object({
+  type: z.literal('watch'),
+  data: z.string(),
+})
+
+export const IncomingRosterEnvelopeSchema = z.object({
+  type: z.literal('roster'),
+  data: z.array(WatchRosterEntrySchema),
+})
+
+export const IncomingStatusEnvelopeSchema = z.object({
+  type: z.literal('status'),
+  data: z.string(),
+})
+
 export const IncomingEnvelopeSchema = z.discriminatedUnion('type', [
   IncomingTextEnvelopeSchema,
   IncomingGmcpEnvelopeSchema,
+  IncomingWatchEnvelopeSchema,
+  IncomingRosterEnvelopeSchema,
+  IncomingStatusEnvelopeSchema,
 ])
 export type IncomingEnvelope = z.infer<typeof IncomingEnvelopeSchema>
 
