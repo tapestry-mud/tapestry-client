@@ -99,7 +99,17 @@ export function ConnectScreen() {
         >
           {isConnecting ? 'Connecting...' : 'Connect'}
         </button>
-        <span className="text-text-secondary text-[10px] font-mono text-center opacity-50">v{__APP_VERSION__}</span>
+        <div className="flex flex-col items-center gap-1 text-text-secondary text-[10px] font-mono opacity-50">
+          <span>v{__APP_VERSION__}</span>
+          <a
+            href="https://discord.gg/YQtbBqZ69J"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-text-primary hover:opacity-100 transition-opacity"
+          >
+            Join our Discord
+          </a>
+        </div>
       </div>
     </div>
   )

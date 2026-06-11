@@ -646,6 +646,8 @@ export function LoginPage({ onBack }: { onBack: () => void }) {
             <span className="pa-conn-led" aria-hidden="true" />
             {' '}Server online
           </span>
+          <span className="dot" aria-hidden="true">&middot;</span>
+          <a href="https://discord.gg/YQtbBqZ69J" target="_blank" rel="noopener noreferrer">Discord</a>
         </div>
       </div>
     </main>

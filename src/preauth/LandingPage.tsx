@@ -60,7 +60,7 @@ export function LandingPage({ onEnter }: { onEnter: () => void }) {
             {' '}Server online
           </span>
           <span className="dot" aria-hidden="true">&middot;</span>
-          <a href="https://discord.gg/tapestry" target="_blank" rel="noopener noreferrer">Discord</a>
+          <a href="https://discord.gg/YQtbBqZ69J" target="_blank" rel="noopener noreferrer">Discord</a>
           <span className="dot" aria-hidden="true">&middot;</span>
           <a href="https://github.com/mallek/tapestry-public" target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
