@@ -67,4 +67,18 @@ describe('charStore', () => {
     expect(s.alignmentBucket).toBe('')
     expect(s.hungerValue).toBe(100)
   })
+
+  it('updateStatus derives hungerTier from hungerValue (server no longer sends tier)', () => {
+    useCharStore.getState().updateStatus({
+      name: 'Raegar', race: 'Human', class: 'Warrior', level: 10, hungerValue: 50,
+    })
+    const s = useCharStore.getState()
+    expect(s.hungerTier).toBe('hungry')
+    expect(s.hungerValue).toBe(50)
+  })
+
+  it('updateStatus leaves hungerTier blank when hungerValue is absent (older servers)', () => {
+    useCharStore.getState().updateStatus({ name: 'Raegar', race: 'Human', class: 'Warrior', level: 10 })
+    expect(useCharStore.getState().hungerTier).toBe('')
+  })
 })

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { CharVitals, CharStatus } from '../types/gmcp'
+import { hungerTierFromValue } from '../utils/hungerTier'
 
 interface CharState {
   name: string; race: string; class: string; level: number
@@ -45,7 +46,10 @@ export const useCharStore = create<CharState>()((set) => ({
       alignment: data.alignment ?? 0,
       alignmentBucket: data.alignmentBucket ?? '',
       gold: data.gold ?? 0,
-      hungerTier: data.hungerTier ?? '',
+      // The survival extraction stopped sending hungerTier over GMCP, so derive it
+      // from the raw hungerValue. Fall back to data.hungerTier for older servers
+      // that still send the tier directly (blank when neither is present).
+      hungerTier: hungerTierFromValue(data.hungerValue) || (data.hungerTier ?? ''),
       hungerValue: data.hungerValue ?? 100,
       isAdmin: data.isAdmin ?? false,
     }),
