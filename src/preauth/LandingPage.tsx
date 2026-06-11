@@ -62,7 +62,7 @@ export function LandingPage({ onEnter }: { onEnter: () => void }) {
           <span className="dot" aria-hidden="true">&middot;</span>
           <a href="https://discord.gg/YQtbBqZ69J" target="_blank" rel="noopener noreferrer">Discord</a>
           <span className="dot" aria-hidden="true">&middot;</span>
-          <a href="https://github.com/mallek/tapestry-public" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://github.com/tapestry-mud/tapestry" target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
       </div>
     </main>
