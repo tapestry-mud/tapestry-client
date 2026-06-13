@@ -369,7 +369,7 @@ function ExistingAccountPasswordStep({
       const selectRes = await fetch(`${baseUrl}/auth/select`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accountId: loginData.account_id, newCharacter: character }),
+        body: JSON.stringify({ sessionToken: loginData.session_token, newCharacter: character }),
       })
       if (selectRes.status === 429) {
         throw new Error('Too many attempts. Please wait a moment and try again.')
