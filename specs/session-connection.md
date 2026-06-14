@@ -347,4 +347,4 @@ direction `'in'` (src/connection/ProtocolParser.ts:24).
 
 ## Change Log
 
-_No change records yet._
+- 2026-06-13 [preauth-session-token](changes/2026-06-13-preauth-session-token.md)
