@@ -29,6 +29,9 @@ jobs:
       - name: Test
         run: npx vitest run
 
+      - name: Spec lint
+        run: npm run spec-lint
+
   deploy:
     if: github.event_name == 'push'
     needs: test

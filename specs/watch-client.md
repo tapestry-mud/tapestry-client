@@ -1,3 +1,8 @@
+---
+capability: watch-client
+last-updated: 2026-06-13
+---
+
 # watch-client
 
 Spectator transport for the anonymous `/watch` surface (WatchClient + WatchPage + watchLogic).

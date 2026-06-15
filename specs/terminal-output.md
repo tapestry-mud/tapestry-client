@@ -1,3 +1,8 @@
+---
+capability: terminal-output
+last-updated: 2026-06-13
+---
+
 # terminal-output
 
 Capability spec for the terminal rendering subsystem: the xterm.js viewport, the
