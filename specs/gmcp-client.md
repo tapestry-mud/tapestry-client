@@ -1,3 +1,8 @@
+---
+capability: gmcp-client
+last-updated: 2026-06-13
+---
+
 # GMCP Client
 
 ## Overview

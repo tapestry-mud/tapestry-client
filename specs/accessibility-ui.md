@@ -1,3 +1,8 @@
+---
+capability: accessibility-ui
+last-updated: 2026-06-13
+---
+
 # Capability Spec: Accessibility UI
 
 ## Overview

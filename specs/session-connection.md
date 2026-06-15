@@ -1,3 +1,8 @@
+---
+capability: session-connection
+last-updated: 2026-06-13
+---
+
 # session-connection
 
 WebSocket player connection: transport lifecycle, JSON frame protocol, GMCP
