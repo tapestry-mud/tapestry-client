@@ -1,6 +1,6 @@
 ---
 capability: gmcp-client
-last-updated: 2026-06-13
+last-updated: 2026-06-17
 ---
 
 # GMCP Client
@@ -199,6 +199,23 @@ Validates against `ResponseHelpSchema` (src/types/responseGmcp.ts:170-178), a
 discriminated union on `status`. On `'ok'` or `'multiple'` calls
 `useHelpStore.openHelp` with the parsed data. On `'no_match'` does nothing (the server
 has already sent a plain-text message via the telnet stream).
+
+**Commands.Categories** (src/connection/GmcpDispatcher.ts:120-127)
+Server-to-client burst sent at post-login. Validates against
+`CommandCategoriesSchema` (src/types/gmcp.ts:65-67), which expects
+`{ categories: Array<{ id: string, label: string }> }`. On success calls
+`useCommandCategoriesStore.getState().setCategories(result.data.categories)`,
+replacing the full category vocabulary used to group the Command Palette.
+
+**Commands.Open** (src/connection/GmcpDispatcher.ts:129-136)
+Server-to-client push. Validates against `CommandsOpenSchema`
+(src/types/gmcp.ts:54-56), which accepts an optional `filter` string. On
+success calls `useCommandPaletteStore.getState().open(result.data.filter)`,
+opening the Command Palette modal with the server-supplied pre-filter (or an
+empty filter when `filter` is absent). Enables the `commands` verb and any
+server-driven palette invocation. The `Commands 1` capability is advertised in
+`Core.Supports.Set` at connection open
+(src/connection/WebSocketClient.ts:41).
 
 ### Pack registry extension point
 

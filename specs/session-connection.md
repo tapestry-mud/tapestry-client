@@ -1,6 +1,6 @@
 ---
 capability: session-connection
-last-updated: 2026-06-13
+last-updated: 2026-06-17
 ---
 
 # session-connection
@@ -215,8 +215,11 @@ it understands (src/connection/WebSocketClient.ts:41):
 
 ```
 { "type": "gmcp", "package": "Core.Supports.Set",
-  "data": ["Char 1", "Room 1", "Comm 1", "Login 1", "Response 1"] }
+  "data": ["Char 1", "Room 1", "Comm 1", "Login 1", "Response 1", "Commands 1"] }
 ```
+
+`Commands 1` opts the session into `Commands.Categories` (category vocabulary
+burst at post-login) and `Commands.Open` (server-driven palette open) pushes.
 
 This is the only GMCP frame the client sends on its own initiative; all
 subsequent GMCP frames are outgoing responses to player commands or server
@@ -284,6 +287,10 @@ In development mode, truly unhandled packages emit a `console.debug` line
 - `Response.Char.Score` -- announces character score summary via ARIA
 - `Response.Look` -- announces room or object description via ARIA
 - `Response.Help` -- opens the help modal (skipped for `status: 'no_match'`)
+- `Commands.Categories` -- replaces the `commandCategoriesStore` category list;
+  burst sent by the server at post-login
+- `Commands.Open` -- opens `commandPaletteStore` with an optional pre-filter;
+  enables the `commands` verb and any server-driven palette invocation
 
 Every handler validates its payload with the matching Zod schema. A parse
 failure logs a `gmcp-parse-error` entry to `debugStore` and takes no further
