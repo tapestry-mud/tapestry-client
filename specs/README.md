@@ -14,7 +14,7 @@ source of truth for how each system behaves now -- a fresh agent or contributor 
 | session-connection | [session-connection.md](session-connection.md) | 2026-06-17 |
 | terminal-output | [terminal-output.md](terminal-output.md) | 2026-06-13 |
 | watch-client | [watch-client.md](watch-client.md) | 2026-06-13 |
-| Command Palette | [command-palette.md](command-palette.md) | 2026-06-17 |
+| command-palette | [command-palette.md](command-palette.md) | 2026-06-17 |
 <!-- rows added as capability specs land -->
 
 ## Contract summary

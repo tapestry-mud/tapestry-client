@@ -92,7 +92,10 @@ lower-cased query `q` changes. For each command, the filter matches against
 `keyword`, `description`, `category` id, the category label (looked up from a
 `Map` built once per memo), and any entry in `aliases`. A command is included
 when any of these fields contains the query as a substring
-(src/panels/CommandsModal.tsx:40-62).
+(src/panels/CommandsModal.tsx:40-62). The web palette is the only surface that
+filters on `description`; the telnet command grid filters keyword, alias,
+category id, and category label only, because telnet renders no description
+column.
 
 ### Empty section omission
 
