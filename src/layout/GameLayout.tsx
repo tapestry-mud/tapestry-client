@@ -26,7 +26,8 @@ import { EquipmentPanel }   from '../panels/EquipmentPanel'
 import { InventoryPanel }   from '../panels/InventoryPanel'
 import { NearbyPanel }      from '../panels/NearbyPanel'
 import { ChatPanel }        from '../panels/ChatPanel'
-import { CommandsDrawer }   from '../panels/CommandsDrawer'
+import { CommandsModal } from '../panels/CommandsModal'
+import { useCommandPaletteStore } from '../stores/commandPaletteStore'
 import { CommandBar }       from '../controls/CommandBar'
 import { Hotbar }           from '../controls/Hotbar'
 import { DebugDrawer }      from '../debug/DebugDrawer'
@@ -170,7 +171,14 @@ export function GameLayout() {
       </main>
 
       <CommandBar />
-      <CommandsDrawer />
+      <button
+        title="Open Commands"
+        onClick={() => useCommandPaletteStore.getState().open()}
+        className="fixed bottom-11 left-4 bg-surface-overlay border border-b-0 border-border rounded-t px-3 py-1 z-20 text-xs font-ui text-text-primary hover:text-accent transition-colors"
+      >
+        Commands
+      </button>
+      <CommandsModal />
       <DebugDrawer />
       <SettingsModal />
     </div>
