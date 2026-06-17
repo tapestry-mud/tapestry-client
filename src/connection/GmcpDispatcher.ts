@@ -17,6 +17,8 @@ import { useAffectsStore } from '../stores/affectsStore'
 import { useCombatTargetStore } from '../stores/combatTargetStore'
 import { useCombatTargetsStore } from '../stores/combatTargetsStore'
 import { useHelpStore } from '../stores/helpStore'
+import { useCommandPaletteStore } from '../stores/commandPaletteStore'
+import { useCommandCategoriesStore } from '../stores/commandCategoriesStore'
 import {
   CharVitalsSchema, CharStatusSchema, CharExperienceSchema, CharCommandsSchema,
   CharEffectsSchema, CharCombatTargetSchema, CharCombatTargetsSchema, CharItemsSchema,
@@ -24,6 +26,7 @@ import {
   RoomInfoSchema, RoomNearbySchema,
   WorldTimeSchema, WorldWeatherSchema, WorldDisplayColorsSchema, CommChannelSchema, LoginPhaseSchema,
   LoginPromptSchema, FlowStepSchema, FlowHelpSchema,
+  CommandsOpenSchema, CommandCategoriesSchema,
 } from '../types/gmcp'
 import { buildContextHint } from '../accessibility/shortcuts/contextHint'
 import {
@@ -111,6 +114,24 @@ export function initCoreHandlers(): void {
       useCommandsStore.getState().setCommands(result.data)
     } else {
       useDebugStore.getState().logConnection('gmcp-parse-error', 'Char.Commands')
+    }
+  })
+
+  GmcpDispatcher.register('Commands.Categories', (data) => {
+    const result = CommandCategoriesSchema.safeParse(data)
+    if (result.success) {
+      useCommandCategoriesStore.getState().setCategories(result.data.categories)
+    } else {
+      useDebugStore.getState().logConnection('gmcp-parse-error', 'Commands.Categories')
+    }
+  })
+
+  GmcpDispatcher.register('Commands.Open', (data) => {
+    const result = CommandsOpenSchema.safeParse(data)
+    if (result.success) {
+      useCommandPaletteStore.getState().open(result.data.filter)
+    } else {
+      useDebugStore.getState().logConnection('gmcp-parse-error', 'Commands.Open')
     }
   })
 
