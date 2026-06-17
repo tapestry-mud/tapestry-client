@@ -51,6 +51,22 @@ export const CharCommandsSchema = z.object({
 })
 export type CharCommands = z.infer<typeof CharCommandsSchema>
 
+export const CommandsOpenSchema = z.object({
+  filter: z.string().optional(),
+})
+export type CommandsOpen = z.infer<typeof CommandsOpenSchema>
+
+export const CommandCategorySchema = z.object({
+  id: z.string(),
+  label: z.string(),
+})
+export type CommandCategory = z.infer<typeof CommandCategorySchema>
+
+export const CommandCategoriesSchema = z.object({
+  categories: z.array(CommandCategorySchema),
+})
+export type CommandCategories = z.infer<typeof CommandCategoriesSchema>
+
 export const CharEffectsSchema = z.object({
   effects: z.array(z.object({
     id: z.string(),
