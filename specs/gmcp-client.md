@@ -1,6 +1,6 @@
 ---
 capability: gmcp-client
-last-updated: 2026-06-17
+last-updated: 2026-06-18
 ---
 
 # GMCP Client
@@ -263,4 +263,4 @@ The thresholds mirror a server-side survival pack (`TIER_FULL_MIN = 67`,
 
 ## Change Log
 
-_No change records yet._
+- 2026-06-18 [command-catalog-display](changes/2026-06-18-command-catalog-display.md)

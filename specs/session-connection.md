@@ -1,6 +1,6 @@
 ---
 capability: session-connection
-last-updated: 2026-06-17
+last-updated: 2026-06-18
 ---
 
 # session-connection
@@ -359,4 +359,5 @@ direction `'in'` (src/connection/ProtocolParser.ts:24).
 
 ## Change Log
 
+- 2026-06-18 [command-catalog-display](changes/2026-06-18-command-catalog-display.md)
 - 2026-06-13 [preauth-session-token](changes/2026-06-13-preauth-session-token.md)

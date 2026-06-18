@@ -10,11 +10,11 @@ source of truth for how each system behaves now -- a fresh agent or contributor 
 | Capability | File | Last Updated |
 |------------|------|--------------|
 | accessibility-ui | [accessibility-ui.md](accessibility-ui.md) | 2026-06-13 |
-| gmcp-client | [gmcp-client.md](gmcp-client.md) | 2026-06-17 |
-| session-connection | [session-connection.md](session-connection.md) | 2026-06-17 |
+| gmcp-client | [gmcp-client.md](gmcp-client.md) | 2026-06-18 |
+| session-connection | [session-connection.md](session-connection.md) | 2026-06-18 |
 | terminal-output | [terminal-output.md](terminal-output.md) | 2026-06-13 |
 | watch-client | [watch-client.md](watch-client.md) | 2026-06-13 |
-| command-palette | [command-palette.md](command-palette.md) | 2026-06-17 |
+| command-palette | [command-palette.md](command-palette.md) | 2026-06-18 |
 <!-- rows added as capability specs land -->
 
 ## Contract summary
