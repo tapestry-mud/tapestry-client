@@ -1,6 +1,6 @@
 ---
 capability: command-palette
-last-updated: 2026-06-18
+last-updated: 2026-06-28
 ---
 
 # command-palette
@@ -118,6 +118,21 @@ component picks it up on the next render, copies it into its local `value`
 state, clears the pending value, and focuses the input
 (src/stores/commandBarStore.ts:16; src/controls/CommandBar.tsx:30-35).
 
+### Command bar submit and blank-line parity
+
+Pressing Enter (or clicking Send) calls `send()`, which trims the input and
+transmits it over the WebSocket even when the trimmed value is empty. A bare
+Enter therefore reaches the server, matching telnet, so server flows that read
+a blank line as "take the default" work the same on web
+(src/controls/CommandBar.tsx:41-43;
+src/controls/CommandBar.test.tsx:31-35). The prior guard returned early on
+empty input, which forced players to type a placeholder to trigger a default.
+
+Empty input is not recorded in command history; the history push is guarded on
+a non-empty, non-password value, so a blank Enter leaves the ArrowUp/ArrowDown
+recall stack untouched (src/controls/CommandBar.tsx:44-46;
+src/controls/CommandBar.test.tsx:37-43).
+
 ### Hover brief via title attribute
 
 Each command button carries a `title` attribute set to `cmd.description` (or
@@ -166,4 +181,5 @@ and `Commands.Open` pushes from the server
 
 ## Change Log
 
+- 2026-06-28 [blank-line-input-parity](changes/2026-06-28-blank-line-input-parity.md)
 - 2026-06-18 [command-catalog-display](changes/2026-06-18-command-catalog-display.md)
