@@ -40,9 +40,8 @@ export function CommandBar() {
 
   function send() {
     const cmd = value.trim()
-    if (!cmd) { return }
-    WebSocketClient.send(cmd)
-    if (!isPassword) {
+    WebSocketClient.send(cmd) // send even when empty: telnet parity, so flow blank-defaults work on web
+    if (!isPassword && cmd) {
       historyRef.current = [cmd, ...historyRef.current].slice(0, MAX_HISTORY)
     }
     historyIndexRef.current = -1

@@ -28,10 +28,18 @@ describe('CommandBar', () => {
     expect((input as HTMLInputElement).value).toBe('')
   })
 
-  it('does not send empty input', () => {
+  it('sends empty input so flow blank-defaults work (telnet parity)', () => {
     render(<CommandBar />)
     fireEvent.keyDown(screen.getByRole('textbox'), { key: 'Enter' })
-    expect(mockSend).not.toHaveBeenCalled()
+    expect(mockSend).toHaveBeenCalledWith('')
+  })
+
+  it('does not add empty input to history', () => {
+    render(<CommandBar />)
+    const input = screen.getByRole('textbox') as HTMLInputElement
+    fireEvent.keyDown(input, { key: 'Enter' }) // empty submit
+    fireEvent.keyDown(input, { key: 'ArrowUp' })
+    expect(input.value).toBe('') // nothing recalled
   })
 
   it('cycles back through history on ArrowUp', () => {
